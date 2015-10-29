@@ -30,8 +30,8 @@ fn not_line_ending(c: u8) -> bool {
 
 named!(line_ending, alt!(tag!("\n") | tag!("\r\n")));
 
-named!(metric_metadata(&'a [u8]) -> MetricMetadata<'a>,
-    chain!(
+fn metric_metadata<'a>(input:&'a [u8]) -> IResult<&'a[u8],MetricMetadata<'a>> {
+    chain!(input,
             take_until!("#")        ~
             tag!("# HELP ")         ~
         name: take_while1!(is_metric_name)      ~
@@ -50,7 +50,7 @@ named!(metric_metadata(&'a [u8]) -> MetricMetadata<'a>,
             metric_type: metric_type,
         }
     )
-);
+}
 
 pub fn parse(data: &[u8]) {
     let mut buf = &data[..];
